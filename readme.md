@@ -192,7 +192,7 @@ The application uses PostgreSQL to store data, and Django ORM manages the intera
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/your-repository/hairdresser-app.git
+   git clone https://github.com/Svetlaniukas/hairdresser_app.git
    cd hairdresser-app
 
 2. **Create a virtual environment**:
