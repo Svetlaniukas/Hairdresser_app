@@ -1,10 +1,8 @@
-# Django settings for the hairdresser project.
-
 from pathlib import Path
 from decouple import config
-import os
 import dj_database_url
 
+# Base directory of the project
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Media file settings
@@ -13,29 +11,29 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Static file settings
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']  # Директория для дополнительных статических файлов
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Директория для собранных статических файлов
+STATICFILES_DIRS = [BASE_DIR / 'static']  # Additional static files directory
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directory for collected static files
 
 # WhiteNoise settings for serving static files in production
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # Security settings
-SECRET_KEY = config('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY', default='your-secret-key')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost',
-                       cast=lambda v: [s.strip() for s in v.split(',')])
+# Allowed hosts
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost', cast=lambda v: [s.strip() for s in v.split(',')])
 
-# Redirect after successful login
+# Redirects after login and logout
 LOGIN_REDIRECT_URL = 'custom_login_redirect'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
 
 # Cookie security settings
-CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=False, cast=bool)
-SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=False, cast=bool)
+CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', default=True, cast=bool)
+SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', default=True, cast=bool)
 
-# Application definition
+# Installed applications
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -49,6 +47,7 @@ INSTALLED_APPS = [
     'reviews',
 ]
 
+# Middleware configuration
 MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.middleware.security.SecurityMiddleware",
@@ -60,8 +59,10 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
+# URL configuration
 ROOT_URLCONF = "hairdresser.urls"
 
+# Templates configuration
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -79,9 +80,10 @@ TEMPLATES = [
     },
 ]
 
+# WSGI application
 WSGI_APPLICATION = "hairdresser.wsgi.application"
 
-# Database configuration
+# Database configuration using environment variables
 DATABASES = {
     'default': dj_database_url.config(
         default=config('DATABASE_URL')
@@ -104,14 +106,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Localization and timezone settings
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# Static files
-# Дублирующие настройки убраны
-# STATIC_URL и STATIC_ROOT уже были определены выше, так что их не нужно дублировать.
-
 # Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Production security settings (used when DEBUG=False)
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
